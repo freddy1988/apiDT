@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="shortcut icon" href="#">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <title>Admin DP</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../bootstrap/css/dashboard.css" rel="stylesheet">
+    <link href="../bootstrap/css/index.css" rel="stylesheet">
+	<script src="../bootstrap/js/jquery-2.1.4.min.js"></script>
+	<script src="../bootstrap/js/bootstrap.min.js"></script>	
+	<script src="../bootstrap/js/functions.js"></script>
+
+	<link href="../bootstrap/css/sticky-footer.css" rel="stylesheet">
+
+    </head>
+    
+    <body>       
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+  		<div class="container-fluid">
+			<div class="navbar-header">
+	  			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+	  			</button>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-left">
+					<img src="../bootstrap/img/iconDP.png" style="display: block;">
+	  			</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id="out">Sign Out</a></li>
+	  			</ul>
+			</div>
+  		</div>
+	</nav>	
+
+    <div class="row" >
+			<div class="col-md-6 col-md-offset-3">
+				<div class="panel panel-default">
+  					<div class="panel-heading">Admin DP</div>
+  					<div class="panel-body">Le damos la bienvenida a su aplicación para la gestión de diversas monedas. La misma le permitira administrar los tipos de cambios y detalles que serán visualizados a traves de la aplicación móvil DolarPlus.</div>
+				</div>
+				<div class="panel panel-login" id="principal">
+					<div class="panel-heading">
+						<div class="row">
+							<div class="col-xs-4">
+								<button type="button" name="money-form-link" id="money-form-link" tabindex="3" class="btn btn-primary active">View Money List</button>
+							</div>
+							<div class="col-xs-4">
+								<button type="button" name="add-form-link" id="add-form-link" tabindex="3" class="btn btn-primary">Add New Money</button>
+							</div>
+							<div class="col-xs-4">
+								<button type="button" name="ep" id="messages-form-link" tabindex="3" class="btn btn-primary">Edit Message Info</button>
+							</div>
+							
+						</div>
+						<hr>
+					</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-12">
+								<form id="add-form" role="form" style="display: none;">
+									<div class="form-group">
+										<input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="Name" value="">
+									</div>
+									<div class="form-group">
+										<input type="text" name="price" id="price" tabindex="2" class="form-control" placeholder="Price. Example: 520.65">
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-sm-6 col-sm-offset-3">
+												<input type="button" name="add_money" id="add_money" tabindex="3" class="form-control btn btn-login" value="Add">
+											</div>
+										</div>
+									</div>
+								</form>
+								<form id="money-form" role="form" style="display: block;">
+									
+										<div class="table-responsive">
+											<table class="table table-striped" id="selectprof">
+         									</table>    
+										</div>
+
+								</form>
+								<form id="messages-form" role="form" style="display: none;">
+									<div class="form-group">
+										<textarea style="resize: none;" name="comentarios" rows="10" id="namme" class="form-control"></textarea>
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-sm-6 col-sm-offset-3">
+												<input type="button" name="edit_message" id="edit_message" tabindex="3" class="form-control btn btn-login" value="Update">
+											</div>
+										</div>
+									</div>
+								</form>
+								<div class="form-group">
+										<div class="row">
+											<div class="col-sm-6 col-sm-offset-3" id="messages">										
+											</div>
+										</div>
+									</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	<footer class="footer">
+  		<div class="container">
+			<p class="text-muted" style="text-align:center;"><b>DP</b></p>
+  		</div>
+	</footer>	
+    </body>
+</html>
+
+<script>
+	if(!Tools.readCookie("user")){
+		window.location="../index.html";	
+	}
+	$("#out").click(function(event) {
+				window.location="../index.html";
+				Tools.eraseCookie("user");
+	});
+	function findRegister(id,name,price){
+		$("#principal").load("editMoney.php", {id, name, price});
+	}
+	function findHistorial(id,name){
+		$("#principal").load("historialMoney.php", {id, name});
+	}
+		var setHeader = function(xhr) {
+    		xhr.setRequestHeader('Authorization', Tools.readCookie("user"));
+		}
+		$.ajax({
+			type: 'GET',
+			url: 'http://apidp.elasticbeanstalk.com/v1/money',
+			cache: false,
+			dataType: "json",
+			beforeSend: setHeader,
+			success: function(results, textStatus, jqXHR){
+
+        		var i;
+        		var html="<thead>";
+                html += "<tr align='center'>";
+                  html += "<th class='hidden-xs hidden-sm'>ID</th>";
+                  html += "<th>Name</th>";
+                  html += "<th class='hidden-xs hidden-sm'>Price</th>";
+                  html += "<th>Status</th>";
+				  html += "<th align='center' class='hidden-xs hidden-sm'>Update Date</th>";
+				  html += "<th align='center'>Update</th>";
+				  html += "<th align='center' class='hidden-xs hidden-sm'>Historial</th>";
+                html += "</tr>";
+              html += "</thead>";
+              	html += "<tbody>";
+        			for ( i in results ) {
+        				html += "<tr>";
+						html += "<td>"+results[i].id+"</td>";
+						html += "<td>"+results[i].name+"</td>";
+						html += "<td class='hidden-xs hidden-sm'>"+results[i].price+"</td>";
+						html += "<td class='hidden-xs hidden-sm'>";
+							html += "<span class='label label-success'>Activa</span>";
+						html += "</td>";
+						html += "<td class='hidden-xs hidden-sm'>"+results[i].update_date+"</td>";
+						html += '<td><input type="button" value="EDIT" class="form-control btn-list" onclick="findRegister(\'' + results[i].id + '\',\'' + results[i].name + '\',\'' + results[i].price + '\')"></td>';
+						html += '<td><input type="button" value="VIEW" class="form-control btn-list" onclick="findHistorial(\'' + results[i].id + '\',\'' + results[i].name + '\')"></td>';
+						
+						html += "</tr>";
+        			}
+        			html += "</tbody>";
+					document.getElementById("selectprof").innerHTML = html;
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				alert(textStatus);
+			}
+			});
+</script>
